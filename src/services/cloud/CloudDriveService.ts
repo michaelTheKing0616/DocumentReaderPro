@@ -20,30 +20,50 @@ export interface CloudFileMeta {
 
 const TOKEN_KEY_PREFIX = 'cloud_drive_';
 
+function readOAuthClientId(provider: CloudProvider): string | undefined {
+  switch (provider) {
+    case 'google':
+      return process.env.EXPO_PUBLIC_GOOGLE_DRIVE_CLIENT_ID;
+    case 'dropbox':
+      return process.env.EXPO_PUBLIC_DROPBOX_CLIENT_ID;
+    case 'onedrive':
+      return process.env.EXPO_PUBLIC_ONEDRIVE_CLIENT_ID;
+    default:
+      return undefined;
+  }
+}
+
+function readOAuthClientSecret(provider: CloudProvider): string | undefined {
+  switch (provider) {
+    case 'google':
+      return process.env.EXPO_PUBLIC_GOOGLE_DRIVE_CLIENT_SECRET;
+    case 'dropbox':
+      return process.env.EXPO_PUBLIC_DROPBOX_CLIENT_SECRET;
+    case 'onedrive':
+      return process.env.EXPO_PUBLIC_ONEDRIVE_CLIENT_SECRET;
+    default:
+      return undefined;
+  }
+}
+
 const OAUTH_CONFIG: Record<
   CloudProvider,
-  { authUrl: string; tokenUrl: string; scopes: string[]; clientIdEnv: string; clientSecretEnv: string }
+  { authUrl: string; tokenUrl: string; scopes: string[] }
 > = {
   google: {
     authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
     tokenUrl: 'https://oauth2.googleapis.com/token',
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-    clientIdEnv: 'EXPO_PUBLIC_GOOGLE_DRIVE_CLIENT_ID',
-    clientSecretEnv: 'EXPO_PUBLIC_GOOGLE_DRIVE_CLIENT_SECRET',
   },
   dropbox: {
     authUrl: 'https://www.dropbox.com/oauth2/authorize',
     tokenUrl: 'https://api.dropboxapi.com/oauth2/token',
     scopes: ['files.metadata.read'],
-    clientIdEnv: 'EXPO_PUBLIC_DROPBOX_CLIENT_ID',
-    clientSecretEnv: 'EXPO_PUBLIC_DROPBOX_CLIENT_SECRET',
   },
   onedrive: {
     authUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
     tokenUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
     scopes: ['Files.Read'],
-    clientIdEnv: 'EXPO_PUBLIC_ONEDRIVE_CLIENT_ID',
-    clientSecretEnv: 'EXPO_PUBLIC_ONEDRIVE_CLIENT_SECRET',
   },
 };
 
@@ -68,7 +88,7 @@ class CloudDriveService {
 
   getAuthorizationUrl(provider: CloudProvider, redirectUri: string): string {
     const cfg = OAUTH_CONFIG[provider];
-    const clientId = process.env[cfg.clientIdEnv];
+    const clientId = readOAuthClientId(provider);
     if (!clientId) {
       logger.warn('Cloud OAuth client ID not configured', { provider });
     }
@@ -89,8 +109,8 @@ class CloudDriveService {
     redirectUri: string
   ): Promise<OAuthTokens> {
     const cfg = OAUTH_CONFIG[provider];
-    const clientId = process.env[cfg.clientIdEnv];
-    const clientSecret = process.env[cfg.clientSecretEnv];
+    const clientId = readOAuthClientId(provider);
+    const clientSecret = readOAuthClientSecret(provider);
 
     const body = new URLSearchParams({
       code,

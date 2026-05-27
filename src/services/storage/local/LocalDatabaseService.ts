@@ -1,4 +1,4 @@
-import * as SQLite from 'expo-sqlite';
+import { openDatabaseAsync, SQLiteDatabase } from 'expo-sqlite/next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Document, GamificationState, ReadingMetrics, UserProfile } from '../../../types';
 import {
@@ -24,13 +24,13 @@ export interface LessonProgressRecord {
 }
 
 class LocalDatabaseService implements ILocalDatabase {
-  private db: SQLite.SQLiteDatabase | null = null;
+  private db: SQLiteDatabase | null = null;
 
   async initialize(): Promise<void> {
     if (this.db) {
       return;
     }
-    this.db = await SQLite.openDatabaseAsync(DB_NAME);
+    this.db = await openDatabaseAsync(DB_NAME);
     await this.db.execAsync(`
       PRAGMA journal_mode = WAL;
 
@@ -126,7 +126,7 @@ class LocalDatabaseService implements ILocalDatabase {
     logger.info('LocalDatabaseService initialized');
   }
 
-  private requireDb(): SQLite.SQLiteDatabase {
+  private requireDb(): SQLiteDatabase {
     if (!this.db) {
       throw new Error('LocalDatabaseService not initialized');
     }

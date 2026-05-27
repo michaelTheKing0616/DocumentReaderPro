@@ -1,4 +1,6 @@
 declare module 'react-native-highlight-words';
+declare module 'react-native-zeromq';
+declare module 'react-native-zeroconf';
 
 declare module '*.json' {
   const value: unknown;

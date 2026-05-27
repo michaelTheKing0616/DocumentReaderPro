@@ -10,13 +10,21 @@ const bundledGazeModelJson = require('../../../assets/models/gaze-predictor/mode
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bundledGazeWeights = require('../../../assets/models/gaze-predictor/gaze-predictor.weights.bin');
 
-/** Optional remote manifests — set via EXPO_PUBLIC_GAZE_MODEL_URL_<NAME> env vars. */
-const REMOTE_MODEL_ENV: Record<string, string> = {
-  Gaze360: 'EXPO_PUBLIC_GAZE360_MODEL_URL',
-  MobileGaze: 'EXPO_PUBLIC_MOBILEGAZE_MODEL_URL',
-  GaTector: 'EXPO_PUBLIC_GATECTOR_MODEL_URL',
-  Gazelle: 'EXPO_PUBLIC_GAZELLE_MODEL_URL',
-};
+/** Optional remote manifests — set via EXPO_PUBLIC_* env vars. */
+function resolveRemoteModelUrl(modelName: string): string | null {
+  switch (modelName) {
+    case 'Gaze360':
+      return process.env.EXPO_PUBLIC_GAZE360_MODEL_URL ?? null;
+    case 'MobileGaze':
+      return process.env.EXPO_PUBLIC_MOBILEGAZE_MODEL_URL ?? null;
+    case 'GaTector':
+      return process.env.EXPO_PUBLIC_GATECTOR_MODEL_URL ?? null;
+    case 'Gazelle':
+      return process.env.EXPO_PUBLIC_GAZELLE_MODEL_URL ?? null;
+    default:
+      return null;
+  }
+}
 
 const PLACEHOLDER_INPUT_DIM = 4;
 const PLACEHOLDER_OUTPUT_DIM = 2;
@@ -109,11 +117,7 @@ export class ModelLoader {
   }
 
   private resolveRemoteManifest(modelName: string): string | null {
-    const envKey = REMOTE_MODEL_ENV[modelName];
-    if (!envKey) {
-      return null;
-    }
-    const url = process.env[envKey];
+    const url = resolveRemoteModelUrl(modelName);
     return url && url.length > 0 ? url : null;
   }
 

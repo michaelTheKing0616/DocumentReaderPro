@@ -1,8 +1,6 @@
 import { logger } from '../logger/Logger';
 import { isDevLabEnabled } from '../../utils/mockGate';
 
-const GAZE360_MANIFEST_ENV = 'EXPO_PUBLIC_GAZE360_MANIFEST_URL';
-
 export interface Gaze360Sample {
   imagePath: string;
   gazeVector: [number, number, number];
@@ -34,7 +32,7 @@ export class Gaze360DataLoader {
       return this.cachedBatch;
     }
 
-    const manifestUrl = process.env[GAZE360_MANIFEST_ENV];
+    const manifestUrl = process.env.EXPO_PUBLIC_GAZE360_MANIFEST_URL;
     if (!manifestUrl) {
       logger.debug('Gaze360 manifest URL not configured; returning scaffold batch');
       this.cachedBatch = this.createScaffoldBatch(limit);

@@ -176,6 +176,8 @@ class PupilService {
   }
 
   private async createZeroMqSubscriber(): Promise<ZeroMqSubscriber> {
+    // Optional native dependency — not bundled on web (see src/shims/react-native-zeromq.web.ts).
+    // eslint-disable-next-line import/no-unresolved
     const module = await import('react-native-zeromq');
     const ZeroMq = module.default ?? module;
     return new ZeroMq.Subscriber() as ZeroMqSubscriber;

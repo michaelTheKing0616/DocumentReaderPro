@@ -2,7 +2,6 @@ import { Quiz, QuizQuestion } from '../../types';
 import { logger } from '../logger/Logger';
 import { getSupabaseUrl, isSupabaseConfigured } from '../storage/supabase/SupabaseClient';
 
-const HF_EDGE_URL_ENV = 'EXPO_PUBLIC_HF_QUIZ_EDGE_URL';
 const MAX_QUESTIONS = 3;
 const MIN_SENTENCE_LENGTH = 20;
 
@@ -39,7 +38,7 @@ class AIQuizService {
   }
 
   private resolveEdgeUrl(): string | null {
-    const explicit = process.env[HF_EDGE_URL_ENV];
+    const explicit = process.env.EXPO_PUBLIC_HF_QUIZ_EDGE_URL;
     if (explicit && !explicit.includes('your-project')) {
       return explicit;
     }
