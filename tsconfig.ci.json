@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/i18n/**/*.ts",
+    "src/services/truescan/vision/**/*.ts",
+    "src/services/family/FamilyService.ts",
+    "src/services/hardware/TobiiService.ts",
+    "src/components/common/Button.tsx"
+  ]
+}

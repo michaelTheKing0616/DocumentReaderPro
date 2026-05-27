@@ -1,0 +1,4 @@
+node_modules/
+web-build/
+supabase/functions/
+e2e/
