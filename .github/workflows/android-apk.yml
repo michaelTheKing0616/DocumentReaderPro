@@ -146,7 +146,7 @@ jobs:
       - name: Build Android APK on EAS
         id: eas_build
         run: |
-          set -euo pipefail
+          set +e
           PROFILE="${{ steps.profile.outputs.name }}"
           echo "Using EAS profile: $PROFILE"
           eas build \
@@ -155,7 +155,34 @@ jobs:
             --non-interactive \
             --wait \
             --json > build-output.json
+          BUILD_EXIT=$?
           cat build-output.json
+          node <<'NODE'
+          const fs = require('fs');
+          let payload = {};
+          try {
+            payload = JSON.parse(fs.readFileSync('build-output.json', 'utf8'));
+          } catch (error) {
+            console.error('Could not parse build-output.json', error);
+            process.exit(0);
+          }
+          const build = Array.isArray(payload) ? payload[0] : payload;
+          if (!build) {
+            process.exit(0);
+          }
+          console.log('EAS build id:', build.id ?? 'unknown');
+          console.log('EAS build status:', build.status ?? 'unknown');
+          if (build.error?.message) {
+            console.error('EAS build error:', build.error.message);
+          }
+          if (build.logFiles?.length) {
+            console.log('EAS log files:', build.logFiles.join(', '));
+          }
+          NODE
+          if [ "$BUILD_EXIT" -ne 0 ]; then
+            echo "::error::EAS remote build failed. Open the build URL in the Expo dashboard for Gradle logs."
+            exit "$BUILD_EXIT"
+          fi
           BUILD_URL=$(node -e "const r=require('./build-output.json'); const b=Array.isArray(r)?r[0]:r; console.log(b?.artifacts?.buildUrl||'');")
           if [ -z "$BUILD_URL" ]; then
             echo "::error::EAS build finished but no artifact URL was returned."

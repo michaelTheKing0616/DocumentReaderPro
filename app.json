@@ -42,6 +42,16 @@
     },
     "plugins": [
       [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "minSdkVersion": 24
+          }
+        }
+      ],
+      [
         "expo-camera",
         {
           "cameraPermission": "Allow ReadAssist Pro to access your camera to scan documents and enable eye tracking."
