@@ -3,6 +3,7 @@
 # Required GitHub secrets (Settings → Secrets and variables → Actions):
 #   EXPO_TOKEN          — Expo access token (https://expo.dev/accounts/[account]/settings/access-tokens)
 #   EAS_PROJECT_ID      — From `eas init` / Expo project dashboard (optional if set in app.config.js)
+#   EAS_PROJECT_OWNER   — Expo org/account slug (e.g. michaelthekings-organization); must match project owner
 #
 # Optional secrets for signed local/EAS release builds:
 #   ANDROID_KEYSTORE_BASE64
@@ -93,6 +94,7 @@ jobs:
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
+      EAS_PROJECT_OWNER: ${{ vars.EAS_PROJECT_OWNER || secrets.EAS_PROJECT_OWNER || 'michaelthekings-organization' }}
       EXPO_PUBLIC_SUPABASE_URL: ${{ vars.EXPO_PUBLIC_SUPABASE_URL || secrets.EXPO_PUBLIC_SUPABASE_URL }}
       EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.EXPO_PUBLIC_SUPABASE_ANON_KEY || secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
       EXPO_PUBLIC_SYNC_ENABLED: ${{ vars.EXPO_PUBLIC_SYNC_ENABLED || 'true' }}
@@ -124,6 +126,13 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
           packager: npm
+
+      - name: Verify Expo account and project owner
+        run: |
+          echo "Logged-in Expo account:"
+          eas whoami
+          echo "Configured owner: ${EAS_PROJECT_OWNER:-<not set>}"
+          echo "Configured projectId: ${EAS_PROJECT_ID:-<from app.json/extra.eas.projectId>}"
 
       - name: Resolve EAS profile
         id: profile

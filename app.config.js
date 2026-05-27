@@ -16,6 +16,9 @@ module.exports = ({ config }) => ({
   android: appJson.expo.android,
   web: appJson.expo.web,
   plugins: appJson.expo.plugins,
+  owner:
+    process.env.EAS_PROJECT_OWNER ??
+    appJson.expo.owner,
   extra: {
     ...(appJson.expo.extra ?? {}),
     eas: {
