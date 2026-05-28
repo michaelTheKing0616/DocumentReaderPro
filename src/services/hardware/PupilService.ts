@@ -176,23 +176,15 @@ class PupilService {
   }
 
   private async createZeroMqSubscriber(): Promise<ZeroMqSubscriber> {
-    // Optional native dependency — not bundled on web (see src/shims/react-native-zeromq.web.ts).
-    // eslint-disable-next-line import/no-unresolved
-    const module = await import('react-native-zeromq');
-    const ZeroMq = module.default ?? module;
-    return new ZeroMq.Subscriber() as ZeroMqSubscriber;
+    throw new Error(
+      'Pupil Labs ZeroMQ is not bundled in this build. Install react-native-zeromq for hardware streaming.'
+    );
   }
 
   private async createZeroconfBrowser(): Promise<ZeroconfBrowser> {
-    try {
-      // Optional native dependency — not bundled in default APK builds.
-      // eslint-disable-next-line import/no-unresolved
-      const module = await import('react-native-zeroconf');
-      const Zeroconf = module.default ?? module;
-      return new Zeroconf() as ZeroconfBrowser;
-    } catch {
-      throw new Error('react-native-zeroconf is not installed');
-    }
+    throw new Error(
+      'Pupil Labs mDNS discovery is not bundled in this build. Install react-native-zeroconf or enter the device IP manually.'
+    );
   }
 }
 

@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import * as tf from '@tensorflow/tfjs';
-import { bundleResourceIO } from '@tensorflow/tfjs-react-native';
+import { bundleResourceIO } from '../../shims/tfjs-react-native.shim';
 import { Asset } from 'expo-asset';
 import { isMockDataEnabled } from '../../utils/mockGate';
 import { logger } from '../logger/Logger';

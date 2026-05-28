@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system';
-import { configurePdfJs } from './pdfjsSetup';
+import { ensurePdfJsConfigured } from './pdfjsSetup';
 import { loadPdfDocument } from './pdfDocumentLoader';
 import { logger } from '../logger/Logger';
 
@@ -97,7 +97,7 @@ class ThumbnailService {
     pageNumber: number,
     outputPath: string
   ): Promise<string | undefined> {
-    configurePdfJs();
+    await ensurePdfJsConfigured();
     const pdf = await loadPdfDocument(filePath);
     if (pageNumber < 1 || pageNumber > pdf.numPages) {
       return undefined;
