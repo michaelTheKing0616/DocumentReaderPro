@@ -191,7 +191,7 @@ jobs:
               curl -fsSL "$LOG_URL" -o eas-build.log || true
               if [ -f eas-build.log ]; then
                 echo "----- Gradle failure excerpt -----"
-                grep -n "FAILURE:\|What went wrong\|Execution failed\|error:" eas-build.log | tail -n 40 || tail -n 80 eas-build.log
+                grep -n "FAILURE:\|What went wrong\|Execution failed\|Bundling failed\|Unable to resolve module\|Metro encountered\|SyntaxError:\|Invalid call at line\|error:" eas-build.log | tail -n 80 || tail -n 200 eas-build.log
                 echo "----------------------------------"
               fi
             fi

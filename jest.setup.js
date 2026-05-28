@@ -20,7 +20,7 @@ jest.mock('@tensorflow/tfjs', () => ({
   loadLayersModel: jest.fn(),
 }));
 
-jest.mock('pdfjs-dist/legacy/build/pdf.mjs', () => ({
+jest.mock('pdfjs-dist/legacy/build/pdf.min.mjs', () => ({
   GlobalWorkerOptions: { workerSrc: '' },
   getDocument: jest.fn(),
   version: '0.0.0',
