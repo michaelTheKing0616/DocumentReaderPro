@@ -180,6 +180,11 @@ jobs:
           }
           NODE
           if [ "$BUILD_EXIT" -ne 0 ]; then
+            BUILD_ID=$(node -e "try{const r=require('./build-output.json');const b=Array.isArray(r)?r[0]:r;console.log(b?.id||'');}catch(e){console.log('');}")
+            if [ -n "$BUILD_ID" ]; then
+              echo "Fetching EAS build details for $BUILD_ID..."
+              eas build:view "$BUILD_ID" --json || true
+            fi
             echo "::error::EAS remote build failed. Open the build URL in the Expo dashboard for Gradle logs."
             exit "$BUILD_EXIT"
           fi
