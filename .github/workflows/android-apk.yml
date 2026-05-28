@@ -181,9 +181,19 @@ jobs:
           NODE
           if [ "$BUILD_EXIT" -ne 0 ]; then
             BUILD_ID=$(node -e "try{const r=require('./build-output.json');const b=Array.isArray(r)?r[0]:r;console.log(b?.id||'');}catch(e){console.log('');}")
+            LOG_URL=$(node -e "try{const r=require('./build-output.json');const b=Array.isArray(r)?r[0]:r;console.log((b?.logFiles&&b.logFiles[0])||'');}catch(e){console.log('');}")
             if [ -n "$BUILD_ID" ]; then
               echo "Fetching EAS build details for $BUILD_ID..."
               eas build:view "$BUILD_ID" --json || true
+            fi
+            if [ -n "$LOG_URL" ]; then
+              echo "Downloading EAS Gradle log excerpt..."
+              curl -fsSL "$LOG_URL" -o eas-build.log || true
+              if [ -f eas-build.log ]; then
+                echo "----- Gradle failure excerpt -----"
+                grep -n "FAILURE:\|What went wrong\|Execution failed\|error:" eas-build.log | tail -n 40 || tail -n 80 eas-build.log
+                echo "----------------------------------"
+              fi
             fi
             echo "::error::EAS remote build failed. Open the build URL in the Expo dashboard for Gradle logs."
             exit "$BUILD_EXIT"

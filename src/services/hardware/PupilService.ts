@@ -184,9 +184,15 @@ class PupilService {
   }
 
   private async createZeroconfBrowser(): Promise<ZeroconfBrowser> {
-    const module = await import('react-native-zeroconf');
-    const Zeroconf = module.default ?? module;
-    return new Zeroconf() as ZeroconfBrowser;
+    try {
+      // Optional native dependency — not bundled in default APK builds.
+      // eslint-disable-next-line import/no-unresolved
+      const module = await import('react-native-zeroconf');
+      const Zeroconf = module.default ?? module;
+      return new Zeroconf() as ZeroconfBrowser;
+    } catch {
+      throw new Error('react-native-zeroconf is not installed');
+    }
   }
 }
 

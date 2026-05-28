@@ -7,9 +7,7 @@ import {
   PanResponder,
   GestureResponderEvent,
   LayoutChangeEvent,
-  Platform,
 } from 'react-native';
-import { Canvas, Rect } from '@shopify/react-native-skia';
 import { Ionicons } from '@expo/vector-icons';
 import { Annotation } from '../../types';
 import { StoredAnnotation } from '../../services/storage/types';
@@ -176,7 +174,7 @@ export const Annotator: React.FC<AnnotatorProps> = ({
     return annotations.map((a) => denormalizeAnnotation(a, contentWidth, contentHeight));
   }, [annotations, contentWidth, contentHeight]);
 
-  const skiaRects = useMemo(() => {
+  const overlayRects = useMemo(() => {
     return displayAnnotations
       .filter((a) => a.type === 'highlight' || a.type === 'underline')
       .map((a) => ({
@@ -209,37 +207,8 @@ export const Annotator: React.FC<AnnotatorProps> = ({
     <View style={styles.container} onLayout={onLayout} {...panResponder.panHandlers}>
       {children}
 
-      {(contentWidth > 0 && contentHeight > 0 && Platform.OS !== 'web') && (
-        <Canvas
-          style={StyleSheet.absoluteFill}
-          pointerEvents="none"
-        >
-          {skiaRects.map((rect) => (
-            <Rect
-              key={rect.id}
-              x={rect.x}
-              y={rect.y}
-              width={rect.width}
-              height={rect.height}
-              color={rect.color}
-              opacity={rect.opacity}
-            />
-          ))}
-          {draftRect && (
-            <Rect
-              x={draftRect.x}
-              y={draftRect.y}
-              width={draftRect.width}
-              height={draft?.type === 'underline' ? 3 : draftRect.height}
-              color={theme.colors.primary}
-              opacity={0.25}
-            />
-          )}
-        </Canvas>
-      )}
-
-      {(contentWidth > 0 && contentHeight > 0 && Platform.OS === 'web') &&
-        skiaRects.map((rect) => (
+      {(contentWidth > 0 && contentHeight > 0) &&
+        overlayRects.map((rect) => (
           <View
             key={rect.id}
             pointerEvents="none"
@@ -254,6 +223,21 @@ export const Annotator: React.FC<AnnotatorProps> = ({
             }}
           />
         ))}
+
+      {draftRect && (
+        <View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            left: draftRect.x,
+            top: draftRect.y,
+            width: draftRect.width,
+            height: draft?.type === 'underline' ? 3 : draftRect.height,
+            backgroundColor: theme.colors.primary,
+            opacity: 0.25,
+          }}
+        />
+      )}
 
       {displayAnnotations
         .filter((a) => a.type === 'note')
