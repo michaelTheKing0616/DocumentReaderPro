@@ -11,8 +11,10 @@ jest.mock('expo-sqlite', () => ({
   }),
 }));
 
-jest.mock('@tensorflow/tfjs-react-native', () => ({
+jest.mock('./src/shims/tfjs-react-native.shim', () => ({
   bundleResourceIO: jest.fn(),
+  fetchBundle: jest.fn().mockResolvedValue(undefined),
+  asyncStorageIO: jest.fn(),
 }));
 
 jest.mock('@tensorflow/tfjs', () => ({
